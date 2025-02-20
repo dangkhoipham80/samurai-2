@@ -5,8 +5,9 @@ import asyncio
 app = FastAPI()
 
 def get_token_info(chain_id: str, token_address: str):
-    """Lấy toàn bộ thông tin token từ API Dexscreener"""
+
     API_URL = f"https://api.dexscreener.com/tokens/v1/{chain_id}/{token_address}"
+
     try:
         response = requests.get(API_URL)
         data = response.json()
@@ -50,4 +51,4 @@ async def websocket_token_price(websocket: WebSocket, chain_id: str, token_addre
 
 @app.get("/")
 async def read_root():
-    return {"message": "API Token Tracker đang chạy!"}
+    return {"message": "Hello World!"}
