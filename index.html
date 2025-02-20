@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Token Price</title>
+</head>
+
+<body>
+    <h1>📈 Theo dõi giá Token Real-time</h1>
+
+    <label for="chain">Chọn Blockchain:</label>
+    <select id="chain">
+        <option value="solana">Solana</option>
+        <option value="ethereum">Ethereum</option>
+        <option value="bsc">BSC</option>
+        <option value="polygon">Polygon</option>
+    </select>
+
+    <label for="token">Nhập Token Address:</label>
+    <input type="text" id="token" placeholder="Nhập địa chỉ token" />
+    <button onclick="startTracking()">🔍 Theo dõi</button>
+
+    <h2>💰 Giá Token:</h2>
+    <p id="price_usd">USD: Đang tải...</p>
+    <p id="price_native">Native: Đang tải...</p>
+
+    <script>
+        let socket = null;
+
+        function startTracking() {
+            const chain = document.getElementById("chain").value;
+            const tokenAddress = document.getElementById("token").value.trim();
+
+            if (!tokenAddress) {
+                alert("Vui lòng nhập địa chỉ token!");
+                return;
+            }
+
+            // Đóng kết nối cũ nếu có
+            if (socket) {
+                socket.close();
+            }
+
+            // Tạo WebSocket kết nối mới
+            const wsUrl = `ws://127.0.0.1:8000/ws/price/${chain}/${tokenAddress}`;
+            socket = new WebSocket(wsUrl);
+
+            socket.onopen = function () {
+                console.log("✅ WebSocket đã kết nối!");
+            };
+
+            socket.onmessage = function (event) {
+                const data = JSON.parse(event.data);
+                console.log("💰 Cập nhật giá:", data);
+                document.getElementById("price_usd").innerText = `USD: ${data.price_usd}`;
+                document.getElementById("price_native").innerText = `Native: ${data.price_native}`;
+            };
+
+            socket.onclose = function () {
+                console.log("❌ Kết nối WebSocket đã đóng.");
+            };
+        }
+    </script>
+</body>
+
+</html>
